@@ -6,7 +6,6 @@ import math
 FPS = 60
 TEMPO_FRAME = 1.0 / FPS
 
-# Função para desenhar um círculo
 def desenhaCirculo(radius, segments, mov_x, mov_y):
     glLoadIdentity()
     glTranslatef(mov_x, mov_y, 0.0)  # Aplica a translação
@@ -18,9 +17,7 @@ def desenhaCirculo(radius, segments, mov_x, mov_y):
         glVertex2f(x, y)
     glEnd()
 
-# Função para desenhar o Sol, Terra e Lua
 def desenhaSistemaSolar(sol_pos, terra_pos, lua_pos):
-    # Desenha o Sol
     glColor3f(1.0, 1.0, 0.0)  # Cor amarela para o Sol
     glPushMatrix()
     glTranslatef(sol_pos[0], sol_pos[1], 0.0)
@@ -28,7 +25,6 @@ def desenhaSistemaSolar(sol_pos, terra_pos, lua_pos):
     desenhaCirculo(0.2, 50, 0.0, 0.0)
     glPopMatrix()
 
-    # Desenha a Terra
     glColor3f(0.0, 0.0, 1.0)  # Cor azul para a Terra
     glPushMatrix()
     glTranslatef(terra_pos[0], terra_pos[1], 0.0)
@@ -64,11 +60,9 @@ def main():
 
             glClear(GL_COLOR_BUFFER_BIT)
 
-            # Movimentos do Sol, Terra e Lua
             angulo_terra += velocidade_terra * delta
             angulo_lua += velocidade_lua * delta
 
-            # Calculando as posições com base nos ângulos
             terra_pos_x = raio_orbita_terra * math.cos(angulo_terra)
             terra_pos_y = raio_orbita_terra * math.sin(angulo_terra)
 
