@@ -1,0 +1,90 @@
+import glfw
+from OpenGL.GL import *
+import time
+import math
+
+FPS = 60
+TEMPO_FRAME = 1.0 / FPS
+
+# Função para desenhar um círculo
+def desenhaCirculo(radius, segments, mov_x, mov_y):
+    glLoadIdentity()
+    glTranslatef(mov_x, mov_y, 0.0)  # Aplica a translação
+    glBegin(GL_TRIANGLE_FAN)
+    for i in range(segments + 1):
+        angle = 2 * math.pi * i / segments
+        x = radius * math.cos(angle)
+        y = radius * math.sin(angle)
+        glVertex2f(x, y)
+    glEnd()
+
+# Função para desenhar o Sol, Terra e Lua
+def desenhaSistemaSolar(sol_pos, terra_pos, lua_pos):
+    # Desenha o Sol
+    glColor3f(1.0, 1.0, 0.0)  # Cor amarela para o Sol
+    glPushMatrix()
+    glTranslatef(sol_pos[0], sol_pos[1], 0.0)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, [1.0, 1.0, 0.0, 1.0])  # Luz emitida pelo Sol
+    desenhaCirculo(0.2, 50, 0.0, 0.0)
+    glPopMatrix()
+
+    # Desenha a Terra
+    glColor3f(0.0, 0.0, 1.0)  # Cor azul para a Terra
+    glPushMatrix()
+    glTranslatef(terra_pos[0], terra_pos[1], 0.0)
+    desenhaCirculo(0.1, 50, 0.0, 0.0)
+    glPopMatrix()
+
+    # Desenha a Lua
+    glColor3f(0.8, 0.8, 0.8)  # Cor cinza para a Lua
+    glPushMatrix()
+    glTranslatef(lua_pos[0], lua_pos[1], 0.0)
+    desenhaCirculo(0.05, 50, 0.0, 0.0)
+    glPopMatrix()
+
+def main():
+    glfw.init()
+    window = glfw.create_window(600, 600, "Sistema Solar", None, None)
+    glfw.make_context_current(window)
+    
+    velocidade_terra = 0.01  # Velocidade da Terra
+    velocidade_lua = 0.02   # Velocidade da Lua
+    raio_orbita_terra = 0.5
+    raio_orbita_lua = 0.15
+    angulo_terra = 0
+    angulo_lua = 0
+
+    tempo_anterior = time.time()
+
+    while not glfw.window_should_close(window):
+        tempo_atual = time.time()
+        delta = tempo_atual - tempo_anterior        
+        if delta >= TEMPO_FRAME:
+            tempo_anterior = tempo_atual
+
+            glClear(GL_COLOR_BUFFER_BIT)
+
+            # Movimentos do Sol, Terra e Lua
+            angulo_terra += velocidade_terra * delta
+            angulo_lua += velocidade_lua * delta
+
+            # Calculando as posições com base nos ângulos
+            terra_pos_x = raio_orbita_terra * math.cos(angulo_terra)
+            terra_pos_y = raio_orbita_terra * math.sin(angulo_terra)
+
+            lua_pos_x = terra_pos_x + raio_orbita_lua * math.cos(angulo_lua)
+            lua_pos_y = terra_pos_y + raio_orbita_lua * math.sin(angulo_lua)
+
+            # Desenha o sistema solar
+            desenhaSistemaSolar([0.0, 0.0], [terra_pos_x, terra_pos_y], [lua_pos_x, lua_pos_y])
+
+            glfw.swap_buffers(window)
+            glfw.poll_events()
+
+        else:            
+            time.sleep(TEMPO_FRAME - delta)
+
+    glfw.terminate()
+
+if __name__ == "__main__":
+    main()
